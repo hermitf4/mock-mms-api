@@ -1,9 +1,10 @@
 package com.nttdata.mock.mms.api;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MockMmsApiApplicationTests extends AbstractTest{
+import org.junit.jupiter.api.Test;
+
+class MockMmsApiApplicationTests extends AbstractTest {
 
 	@Test
 	void contextLoads() {

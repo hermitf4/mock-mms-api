@@ -1,0 +1,126 @@
+swagger: '2.0'
+info:
+  version: 1.0.0.0
+  title: Mock Mms Api
+  description: Mock Mms Api.
+host: 'localhost:8090'
+basePath: /
+schemes:
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: X-auth
+    description: Template Bearer TOKEN_VALUE
+    in: header
+tags:
+  - name: testService
+    description: Test Service
+paths:
+  /test/testCall/:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - testService
+      summary: Test Service
+      description: Test Service
+      operationId: testCall
+      produces:
+        - application/json
+      responses:
+        '200':
+          $ref: '#/responses/response-ok-200'
+        '400':
+          $ref: '#/responses/response-bad-request-400'
+        '401':
+          $ref: '#/responses/response-unauthorized-401'
+        '403':
+          $ref: '#/responses/response-forbidden-403'
+        '404':
+          $ref: '#/responses/response-not-found-404'
+        '500':
+          $ref: '#/responses/response-internal-server-error-500'
+parameters:
+  header-optimistic-lock:
+    name: If-Match
+    description: Optimistic Lock
+    in: header
+    type: string
+    required: true
+responses:
+  response-ok-200:
+    description: OK
+    schema:
+      $ref: '#/definitions/response-base'
+  response-bad-request-400:
+    description: Invalid Input
+    schema:
+      $ref: '#/definitions/response-base'
+    examples:
+      application/json:
+        success: false
+        resultCode: 0
+        transactionId: 0db5fcc1-00cc-4fa4-b5e9-f7f5e04a206c
+  response-unauthorized-401:
+    description: Authentication token required
+    examples:
+      text/plain: UNAUTHORIZED
+  response-forbidden-403:
+    description: Forbidden
+  response-not-found-404:
+    description: The requested resource could not be found
+    schema:
+      $ref: '#/definitions/response-base'
+    examples:
+      application/json:
+        success: false
+        resultCode: 0
+        transactionId: 0db5fcc1-00cc-4fa4-b5e9-f7f5e04a206c
+  response-precondition-failed-412:
+    description: 'Concurrent modification detected, update and retry'
+    schema:
+      $ref: '#/definitions/response-base'
+    examples:
+      application/json:
+        success: false
+        resultCode: 0
+        transactionId: 0db5fcc1-00cc-4fa4-b5e9-f7f5e04a206c
+  response-internal-server-error-500:
+    description: Internal Server error
+    schema:
+      $ref: '#/definitions/response-base'
+    examples:
+      application/json:
+        success: false
+        resultCode: 0
+        transactionId: 0db5fcc1-00cc-4fa4-b5e9-f7f5e04a206c
+definitions:
+  response-base:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Indica se l'operazione è andata a buon fine
+      resultCode:
+        type: integer
+        description: 'Codice realtivo al risultato, se 0 success altrimenti ≠ 0'
+      message:
+        type: string
+        description: Messaggio di errore
+      errors:
+        type: array
+        description: Eventuali altri errori
+        items:
+          type: string
+      transactionId:
+        description: transaction identification
+        type: string
+      type:
+        type: string
+        description: Class type
+    discriminator: type
+    required:
+      - success
+      - resultCode
+      - type

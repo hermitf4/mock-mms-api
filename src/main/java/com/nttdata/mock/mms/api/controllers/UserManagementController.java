@@ -15,7 +15,7 @@ public class UserManagementController {
 	@Autowired
 	private IUserManagement iUserManagement;
 	
-	@RequestMapping(value = "/mock-mms-api/getUsers", method = RequestMethod.GET)
+	@RequestMapping(value = "/getUsers", method = RequestMethod.GET)
 	public ResponseEntity<Object> getUsers(){
 		return new ResponseEntity<>(iUserManagement.getUsers(), HttpStatus.OK);
 	}

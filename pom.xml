@@ -1,41 +1,279 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.0</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath />
 	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nttdata.mock.mms.api</groupId>
-	<artifactId>mock.mms.api</artifactId>
+	<artifactId>mock-mms-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mock.mms.api</name>
-	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
+
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+
+		<io.springfox.version>2.9.2</io.springfox.version>
+		<swagger.annotations.version>1.6.1</swagger.annotations.version>
+		<swagger.models.version>1.6.1</swagger.models.version>
+		<validation.api.version>2.0.1.Final</validation.api.version>
+
+		<swagger-codegen-maven-plugin-version>2.4.12</swagger-codegen-maven-plugin-version>
+		<swagger.file.location>${project.basedir}/swagger/mock-mms-api-swagger.yaml</swagger.file.location>
+		<swagger.file.output>${project.basedir}</swagger.file.output>
+
+		<model-mapper.version>2.3.7</model-mapper.version>
+
+		<directory.fe>C:/My/workspace_comune_bo/local/develop/mock-mms-portale/dist</directory.fe>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- SWAGGER -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${io.springfox.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${io.springfox.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${swagger.annotations.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>${swagger.models.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${model-mapper.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
+
 		<plugins>
+		
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>./target/classes/static</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${directory.fe}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>${swagger-codegen-maven-plugin-version}</version>
+				<executions>
+					<execution>
+						<id>generate-api-dto</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${swagger.file.location}</inputSpec>
+							<language>spring</language>
+							<generateApis>true</generateApis>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateApiTests>false</generateApiTests>
+							<generateModels>true</generateModels>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateModelTests>true</generateModelTests>
+							<generateModelTests>false</generateModelTests>
+							<generateSupportingFiles>true</generateSupportingFiles>
+
+							<supportingFilesToGenerate>ApiCallback.java,ApiClient.java,ApiException.java,ApiKeyAuth.java,ApiResponse.java,Authentication.java,Configuration.java,GzipRequestInterceptor.java,HttpBasicAuth.java,JSON.java,OAuth.java,OAuthFlow.java,Pair.java,ProgressRequestBody.java,ProgressResponseBody.java,StringUtil.java</supportingFilesToGenerate>
+
+							<modelPackage>com.nttdata.mock.mms.api.swagger.dto</modelPackage>
+
+							<modelNameSuffix>DTO</modelNameSuffix>
+
+							<apiPackage>com.nttdata.mock.mms.api.swagger.api</apiPackage>
+
+							<configOptions>
+								<dateLibrary>java8</dateLibrary>
+								<sourceFolder>src/main/java</sourceFolder>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+							</configOptions>
+
+							<output>${swagger.file.output}</output>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-MODELS</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${swagger.file.location}</inputSpec>
+							<language>java</language>
+							<generateApis>false</generateApis>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateApiTests>false</generateApiTests>
+							<generateModels>true</generateModels>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateModelTests>true</generateModelTests>
+							<generateModelTests>false</generateModelTests>
+
+							<generateSupportingFiles>false</generateSupportingFiles>
+
+							<modelPackage>com.nttdata.mock.mms.api.swagger.models</modelPackage>
+
+							<configOptions>
+								<dateLibrary>java8</dateLibrary>
+								<sourceFolder>src/main/java</sourceFolder>
+								<interfaceOnly>true</interfaceOnly>
+								<useTags>true</useTags>
+							</configOptions>
+
+							<output>${swagger.file.output}</output>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.build.sourceDirectory}/com/nttdata/mock/mms/api/swagger</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-clean-plugin</artifactId>
+										<versionRange>[0,)</versionRange>
+										<goals>
+											<goal>clean</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>io.swagger</groupId>
+										<artifactId>swagger-codegen-maven-plugin</artifactId>
+										<versionRange>[0,)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

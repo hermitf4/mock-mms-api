@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/.swagger-codegen-ignore
+/.swagger-codegen
+/src/main/java/com/nttdata/mock/mms/api/swagger
