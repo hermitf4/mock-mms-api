@@ -31,7 +31,7 @@
 
 		<model-mapper.version>2.3.7</model-mapper.version>
 
-		<directory.fe>C:/My/workspace_comune_bo/local/develop/mock-mms-portale/dist</directory.fe>
+		<directory.fe>../dist</directory.fe>
 		<maven.test.skip>true</maven.test.skip>
 	</properties>
 
