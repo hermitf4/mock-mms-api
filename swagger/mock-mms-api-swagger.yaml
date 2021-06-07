@@ -41,6 +41,51 @@ paths:
           $ref: '#/responses/response-not-found-404'
         '500':
           $ref: '#/responses/response-internal-server-error-500'
+  /getUsers:
+    get:
+      tags:
+        - Users
+      summary: UserService
+      description: UserService
+      operationId: getUsers
+      produces:
+        - application/json
+      responses:
+        '200':
+          $ref: '#/responses/list-user-response'
+        '400':
+          $ref: '#/responses/response-bad-request-400'
+        '401':
+          $ref: '#/responses/response-unauthorized-401'
+        '403':
+          $ref: '#/responses/response-forbidden-403'
+        '404':
+          $ref: '#/responses/response-not-found-404'
+        '500':
+          $ref: '#/responses/response-internal-server-error-500'
+  /getAuthenticationFedera:
+    get:
+      tags:
+        - Authentication
+      summary: Authentication Service
+      description: Authentication Service 
+      operationId: getAuthenticationFedera
+      produces:
+        - application/json
+      responses:
+        '200':
+          $ref: '#/responses/authentication-response'
+        '400':
+          $ref: '#/responses/response-bad-request-400'
+        '401':
+          $ref: '#/responses/response-unauthorized-401'
+        '403':
+          $ref: '#/responses/response-forbidden-403'
+        '404':
+          $ref: '#/responses/response-not-found-404'
+        '500':
+          $ref: '#/responses/response-internal-server-error-500'
+
 parameters:
   header-optimistic-lock:
     name: If-Match
@@ -49,6 +94,16 @@ parameters:
     type: string
     required: true
 responses:
+  authentication-response:
+    description: This is the authentication
+    schema:
+      $ref: '#/definitions/authentication-response'
+  list-user-response:
+    description: This means its ok
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/user-response'
   response-ok-200:
     description: OK
     schema:
@@ -124,3 +179,27 @@ definitions:
       - success
       - resultCode
       - type
+  user-response:
+    allOf:
+      - $ref: '#/definitions/response-base'
+    description: This is one User
+    type: object
+    properties:
+      firstName:
+        description: This is the name of User
+        type: string
+      lastname:
+        description: This is the lastname of User
+        type: string
+      email:
+        description: This is the email of User
+        type: string
+  authentication-response:
+    allOf:
+      - $ref: '#/definitions/response-base'
+    description: This is token
+    type: object
+    properties:
+      token:
+        description: This is authentication token
+        type: string
