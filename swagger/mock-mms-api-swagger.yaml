@@ -43,6 +43,8 @@ paths:
           $ref: '#/responses/response-internal-server-error-500'
   /getUsers:
     get:
+      security:
+        - Bearer: []
       tags:
         - Users
       summary: UserService
