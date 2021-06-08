@@ -29,9 +29,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		final String requestTokenHeader = request.getHeader("X-auth");
+		String jwtToken = null;
 		
-		if (requestTokenHeader != null) {
-			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(requestTokenHeader);
+		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+			jwtToken = requestTokenHeader.substring(7);
+			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(jwtToken);
 			
 			try {
 				validateToken(jwtTokenUtil, chain, request, response);
