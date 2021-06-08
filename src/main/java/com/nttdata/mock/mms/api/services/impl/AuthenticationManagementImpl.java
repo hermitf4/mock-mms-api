@@ -15,7 +15,8 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		AuthenticationResponse result = new AuthenticationResponse();
 		
 		try {
-			final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.generateToken();
+			String username = "test";
+			final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.generateToken(username);
 			final String token = jwtTokenUtil.getToken();
 			
 			result.setType("AuthenticationResponse");

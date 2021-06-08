@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.nttdata.mock.mms.api.model.User;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -62,12 +60,12 @@ public class JwtTokenUtil {
 	}
 
 	
-	public static JwtTokenUtil generateToken() {
+	public static JwtTokenUtil generateToken(String username) {
 		Map<String, Object> claims = new HashMap<String, Object>(); 
 		
-		claims.put("sub", "Subject");
+		claims.put("sub", username);
 		
-		return doGenerateToken(claims, "Subject");
+		return doGenerateToken(claims, username);
 	}
 
 	
