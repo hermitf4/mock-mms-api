@@ -77,8 +77,7 @@ public class JwtTokenUtil {
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
 				.signWith(SignatureAlgorithm.HS512, SECRET).compact();
 		
-		JwtTokenUtil jwtUtil = new JwtTokenUtil(token);
-		return jwtUtil;
+		return new JwtTokenUtil(token);
 	}
 
 	
