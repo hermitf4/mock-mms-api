@@ -1,5 +1,7 @@
 package com.nttdata.mock.mms.api.services.impl;
 
+import javax.servlet.http.Cookie;
+
 import org.springframework.stereotype.Service;
 
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
@@ -16,7 +18,13 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		try {
 			String username = "test";
-			final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.generateToken(username);
+			//--------CookieTest----------//
+			Cookie cookie = new Cookie("authFEDERA", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1QkI2RjFCQ0QwMzYzQTJFMURFMkVGODMzNDI4NjgwNyIsIkNETUNPRElDRUZJU0NBTEUiOiJIU1NCTFI4MEwxN1ozMzZFIiwiZXhwIjoxNjIzNDE0NjEwLCJpYXQiOjE2MjMzMjgyMDN9.FQPDV_Sy2awf2rfmO-xY589YmWeoSbigtfMnWOBQxvQ");
+			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+			username = jwtTokenUtil.decodeJwtToken(cookie.getValue()).getClaim("CDMCODICEFISCALE").asString();
+			
+			//--------CookieTest----------//
+			/*final JwtTokenUtil*/ jwtTokenUtil = JwtTokenUtil.generateToken(username);
 			final String token = jwtTokenUtil.getToken();
 			
 			result.setType("AuthenticationResponse");

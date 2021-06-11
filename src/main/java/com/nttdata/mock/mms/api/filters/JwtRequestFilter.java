@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 
 
@@ -22,7 +23,6 @@ import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JwtRequestFilter.class);
-
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -37,30 +37,37 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			
 			try {
 				validateToken(jwtTokenUtil, chain, request, response);
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException | MockMmmsException e) {
 				LOG.error("Unable to get JWT Token", e);
 			}
 		} else {
 			chain.doFilter(request, response);
 		}
+		
+		/*Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				logger.debug(cookie.getName() + " : " + cookie.getValue());
+				if(cookie.getName().equals("authFEDERA")) {
+					
+				}
+			}
+		}*/
 	}
 	
 	
 	private void validateToken(JwtTokenUtil jwtTokenUtil, FilterChain chain, HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) throws ServletException, IOException, MockMmmsException {
 		
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			
-			if (jwtTokenUtil.validateToken("test")) {
+		if (SecurityContextHolder.getContext().getAuthentication() == null && jwtTokenUtil.validateToken(jwtTokenUtil.getToken()) != null) {			
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-				 = new UsernamePasswordAuthenticationToken("test", "password");
+				 = new UsernamePasswordAuthenticationToken(jwtTokenUtil.getToken(), jwtTokenUtil.getToken());
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-			}
+				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);	
 		}
-		
 		chain.doFilter(request, response);
+		
 	}
 }

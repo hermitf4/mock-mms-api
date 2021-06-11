@@ -26,17 +26,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtRequestFilter jwtRequestFilter;
 	
 	@Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-          .withUser("test").password(passwordEncoder().encode("password"))
-          .authorities("ROLE_USER");
+    private CustomAuthenticationProvider authProvider;
+	
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {	
+		auth.authenticationProvider(authProvider);
     }
+	
 	
 	@Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 	
+
 	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
