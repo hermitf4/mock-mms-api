@@ -6,11 +6,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.FileCopyUtils;
 
@@ -22,19 +19,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-
 public class JwtTokenUtil implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
-	private static final String SECRET = "mysecretkey";
 	
 	private String token = null;
-	
-	@Value("classpath:jwt-secret-key")
-	private transient Resource resource;
 	
 	public JwtTokenUtil(String jwtToken) {
 		this.token = jwtToken;
@@ -50,79 +40,29 @@ public class JwtTokenUtil implements Serializable{
 	    return token;
 	}
 	
-	
-	public String getUsernameFromToken() {
-		return getClaimFromToken(Claims::getSubject);
-	}
-
-	
-	public Date getExpirationDateFromToken() {
-		return getClaimFromToken(Claims::getExpiration);
-	}
-
-	
-	public <T> T getClaimFromToken(Function<Claims, T> claimsResolver) {
-		final Claims claims = getAllClaimsFromToken();
-		return claimsResolver.apply(claims);
-	}
-	
-	
-	public String getClaimFromTokenByName(String name) {
-		final Claims claims = getAllClaimsFromToken();
-		return (String)claims.get(name);
-	}
-	
-	
-	public Claims getAllClaimsFromToken() {
-		return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
-	}
-
-	
-	private Boolean isTokenExpired() {
-		final Date expiration = getExpirationDateFromToken();
-		return expiration.before(new Date());
-	}
-
-	
-	public static JwtTokenUtil generateToken(String username) throws IllegalArgumentException, JWTCreationException {
+	public JwtTokenUtil generateToken(String tokenFEDERA) throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Map<String, Object> claims = new HashMap<String, Object>(); 
 		
 		String subJect = "mock-mms-api";
 		
-		claims.put("username", username);
+		claims.put("CODICEFISCALE", tokenFEDERA);
 		
 		return doGenerateToken(claims, subJect);
 	}
 
 	
-	private static JwtTokenUtil doGenerateToken(Map<String, Object> claims, String subject) throws IllegalArgumentException, JWTCreationException {
+	private static JwtTokenUtil doGenerateToken(Map<String, Object> claims, String subject) throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Instant issuedAt = Instant.now();
 		
 		Builder builder = JWT.create().withSubject(subject).withIssuedAt(Date.from(issuedAt)).withExpiresAt(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY));
 
 		claims.forEach((claimName, value) -> builder.withClaim(claimName, StringUtils.join(value)));
 
-		return new JwtTokenUtil(builder.sign(Algorithm.HMAC256(SECRET)));
+		return new JwtTokenUtil(builder.sign(Algorithm.HMAC256(readJwtSecretKeyFromFile())));
 	}
 
 	
 	public DecodedJWT validateToken(String token) throws MockMmmsException {
-		JWTVerifier verifiefToken = JWT.require(Algorithm.HMAC256(SECRET)).build();
-		
-		try {
-			return verifiefToken.verify(token);
-		} catch (Exception e) {
-			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
-		}
-	}
-	
-	
-	public Boolean validateToken() {
-		return (!isTokenExpired());
-	}
-	
-	public DecodedJWT decodeJwtToken(String token) throws MockMmmsException{
-		
 		JWTVerifier verifiefToken = JWT.require(Algorithm.HMAC256(readJwtSecretKeyFromFile())).build();
 		
 		try {
@@ -130,21 +70,41 @@ public class JwtTokenUtil implements Serializable{
 		} catch (Exception e) {
 			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
 		}
-		
 	}
 	
-	public String readJwtSecretKeyFromFile () throws MockMmmsException{
+	public static String readJwtSecretKeyFromFile () throws MockMmmsException{
 		
 		String secretKey = null;
 		
 		try {
-			File file = new File("src/main/resources/jwt-secret-key");
+			File file = new File("src/main/resources/private_key");
 			secretKey = new String(FileCopyUtils.copyToByteArray(file));
 		} catch (Exception e) {
 			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
 		}
 		
 		return secretKey;
+	}
+	
+	public DecodedJWT decodeJwtTokenFedera(String token) throws MockMmmsException{
+		
+		String publicKey = null;
+		
+		try {
+			File file = new File("src/main/resources/jwt-federa-key");
+			publicKey = new String(FileCopyUtils.copyToByteArray(file));
+		} catch (Exception e) {
+			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
+		}
+		
+		JWTVerifier verifiefToken = JWT.require(Algorithm.HMAC256(publicKey)).build();
+		
+		try {
+			return verifiefToken.verify(token);
+		} catch (Exception e) {
+			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
+		}
+		
 	}
 }
  

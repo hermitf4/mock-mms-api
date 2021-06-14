@@ -44,15 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		}
 		
-		/*Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				logger.debug(cookie.getName() + " : " + cookie.getValue());
-				if(cookie.getName().equals("authFEDERA")) {
-					
-				}
-			}
-		}*/
+		
 	}
 	
 	

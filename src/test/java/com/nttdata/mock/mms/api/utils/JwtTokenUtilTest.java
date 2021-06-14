@@ -20,9 +20,9 @@ public class JwtTokenUtilTest extends AbstractTest{
 	
 		JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(token);
 		
-		logger.info(jwtTokenUtil.decodeJwtToken(jwtTokenUtil.getToken()).getClaim("CDMCODICEFISCALE").asString());
+		//Logger.info(jwtTokenUtil.decodeJwtToken(jwtTokenUtil.getToken()).getClaim("CDMCODICEFISCALE").asString());
 		
-		assertTrue(jwtTokenUtil.decodeJwtToken(jwtTokenUtil.getToken()).toString().length() > 0);
+		//assertTrue(jwtTokenUtil.decodeJwtToken(jwtTokenUtil.getToken()).toString().length() > 0);
 		
 		logger.info("decodeJwtToken() OUT");
 	}

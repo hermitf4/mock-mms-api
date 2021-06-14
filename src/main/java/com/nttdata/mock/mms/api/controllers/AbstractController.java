@@ -3,6 +3,7 @@ package com.nttdata.mock.mms.api.controllers;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,10 @@ public abstract class AbstractController {
 	protected ModelMapper mapper;
 
 	@Autowired
-	protected HttpServletResponse httpResponse;
+	public HttpServletResponse httpResponse;
+	
+	@Autowired
+	public HttpServletRequest httpRequest;
 
 	protected <T extends ResponseBaseDTO> T buildResponseSuccess(T response) {
 		response.success(true);
