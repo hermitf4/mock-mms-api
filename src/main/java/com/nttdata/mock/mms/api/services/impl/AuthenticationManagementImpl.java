@@ -1,10 +1,21 @@
 package com.nttdata.mock.mms.api.services.impl;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Service;
 
+import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
+import com.nttdata.mock.mms.api.utils.Constants;
 import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 
 
@@ -12,9 +23,15 @@ import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 public class AuthenticationManagementImpl implements IAuthenticationManagement{
 
 	@Override
-	public AuthenticationResponse getAuthenticationFedera(String tokenFEDERA) {
+	public AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
+		
+		List<Cookie> cookies = Optional.ofNullable(httpRequest.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
+		
+		Cookie cookieFedera = cookies.stream().filter(cookie -> cookie.getName().equals(Constants.COOKIENAME)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTIOM);
+		
+		String tokenFEDERA = cookieFedera.getValue();
 		try {
 			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
 			String codiceFiscale = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).getClaim("CDMCODICEFISCALE").asString();
