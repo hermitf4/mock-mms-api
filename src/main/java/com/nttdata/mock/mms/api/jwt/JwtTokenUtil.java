@@ -1,6 +1,5 @@
-package com.nttdata.mock.mms.api.utils;
+package com.nttdata.mock.mms.api.jwt;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyFactory;
@@ -16,9 +15,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
 import com.auth0.jwt.JWT;
@@ -29,26 +30,22 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 
+@Component
 public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+	
+	@Value("classpath:jwt-federa-key")
+	private transient Resource publicFederaKey;
+	
+	@Value("classpath:private_key")
+	private transient Resource privateKey;
+	
+	@Value("classpath:public_key")
+	private transient Resource publicKey;
 
-	private String token = null;
-
-	public JwtTokenUtil(String jwtToken) {
-		this.token = jwtToken;
-	}
-
-	public JwtTokenUtil() {
-		super();
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public JwtTokenUtil generateToken(String tokenFEDERA)
+	public String generateToken(String tokenFEDERA)
 			throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Map<String, Object> claims = new HashMap<String, Object>();
 
@@ -59,14 +56,14 @@ public class JwtTokenUtil implements Serializable {
 		return doGenerateToken(claims, subJect);
 	}
 
-	private static JwtTokenUtil doGenerateToken(Map<String, Object> claims, String subject) throws IllegalArgumentException, JWTCreationException, MockMmmsException {
+	private String doGenerateToken(Map<String, Object> claims, String subject) throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Instant issuedAt = Instant.now();
 
 		Builder builder = JWT.create().withSubject(subject).withIssuedAt(Date.from(issuedAt)).withExpiresAt(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY));
 
 		claims.forEach((claimName, value) -> builder.withClaim(claimName, StringUtils.join(value)));
 
-		return new JwtTokenUtil(builder.sign(Algorithm.RSA256((RSAPublicKey) getPublicKey(), ((RSAPrivateKey) getPrivateKey()))));
+		return builder.sign(Algorithm.RSA256((RSAPublicKey) getPublicKey(), ((RSAPrivateKey) getPrivateKey())));
 	}
 
 	public DecodedJWT validateToken(String token) throws MockMmmsException {
@@ -80,10 +77,10 @@ public class JwtTokenUtil implements Serializable {
 		}
 	}
 
-	private static PrivateKey getPrivateKey() throws MockMmmsException {
+	private PrivateKey getPrivateKey() throws MockMmmsException {
 		PrivateKey key = null;
 
-		try (InputStream fis = FileUtils.openInputStream(new File("src/main/resources/private_key"))) {
+		try (InputStream fis = privateKey.getInputStream()) {
 			PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(Base64.getMimeDecoder().decode((StringUtils.replaceEachRepeatedly(new String(FileCopyUtils.copyToByteArray(fis)), new String[] { "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----" }, new String[] { "", "" })).trim()));
 
 			KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -96,10 +93,10 @@ public class JwtTokenUtil implements Serializable {
 		return key;
 	}
 
-	private static PublicKey getPublicKey() throws MockMmmsException {
+	private PublicKey getPublicKey() throws MockMmmsException {
 		PublicKey key = null;
 
-		try (InputStream fis = FileUtils.openInputStream(new File("src/main/resources/public_key"))) {
+		try (InputStream fis = publicKey.getInputStream()) {
 
 			X509EncodedKeySpec spec = new X509EncodedKeySpec(Base64.getMimeDecoder().decode((StringUtils.replaceEachRepeatedly(new String(FileCopyUtils.copyToByteArray(fis)), new String[] { "-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----" }, new String[] { "", "" })).trim()));
 
@@ -113,10 +110,10 @@ public class JwtTokenUtil implements Serializable {
 		return key;
 	}
 
-	private static PublicKey getPublicFederaKey() throws MockMmmsException {
+	private PublicKey getPublicFederaKey() throws MockMmmsException {
 		PublicKey key = null;
 
-		try (InputStream fis = FileUtils.openInputStream(new File("src/main/resources/jwt-federa-key"))) {
+		try (InputStream fis = publicFederaKey.getInputStream();) {
 
 			X509EncodedKeySpec spec = new X509EncodedKeySpec(Base64.getMimeDecoder().decode((StringUtils.replaceEachRepeatedly(new String(FileCopyUtils.copyToByteArray(fis)), new String[] { "-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----" }, new String[] { "", "" })).trim()));
 

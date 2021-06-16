@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,14 +20,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
+import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
-import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JwtRequestFilter.class);
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -37,10 +41,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		
 		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 			jwtToken = requestTokenHeader.substring(7);
-			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(jwtToken);
 			
 			try {
-				validateToken(jwtTokenUtil, chain, request, response);
+				validateToken(jwtToken, chain, request, response);
 			} catch (IllegalArgumentException | MockMmmsException e) {
 				ResponseBase errorResponse = new ResponseBase();
 				errorResponse.setSuccess(false);
@@ -55,12 +58,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		
 	}
 	
-	private void validateToken(JwtTokenUtil jwtTokenUtil, FilterChain chain, HttpServletRequest request, 
+	private void validateToken(String jwtToken, FilterChain chain, HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException, MockMmmsException {
 		
-			if (SecurityContextHolder.getContext().getAuthentication() == null && jwtTokenUtil.validateToken(jwtTokenUtil.getToken()) != null) {			
+			if (SecurityContextHolder.getContext().getAuthentication() == null && jwtTokenUtil.validateToken(jwtToken) != null) {			
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-				 = new UsernamePasswordAuthenticationToken(jwtTokenUtil.getToken(), jwtTokenUtil.getToken());
+				 = new UsernamePasswordAuthenticationToken(jwtToken, jwtToken);
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				

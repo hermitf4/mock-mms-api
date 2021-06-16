@@ -9,19 +9,23 @@ import java.util.stream.Stream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
+import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
 import com.nttdata.mock.mms.api.utils.Constants;
-import com.nttdata.mock.mms.api.utils.JwtTokenUtil;
 
 
 @Service
 public class AuthenticationManagementImpl implements IAuthenticationManagement{
-
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
+	
 	@Override
 	public AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
@@ -33,9 +37,8 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		try {
-			JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
 			String codiceFiscale = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).getClaim("CDMCODICEFISCALE").asString();
-			String token = jwtTokenUtil.generateToken(codiceFiscale).getToken();
+			String token = jwtTokenUtil.generateToken(codiceFiscale);
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");

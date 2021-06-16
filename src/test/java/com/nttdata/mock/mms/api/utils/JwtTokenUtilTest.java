@@ -3,6 +3,7 @@ package com.nttdata.mock.mms.api.utils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -10,10 +11,14 @@ import javax.servlet.http.Cookie;
 
 import com.nttdata.mock.mms.api.AbstractTest;
 import com.nttdata.mock.mms.api.controllers.AuthenticationManagementControllerTest;
+import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 
 public class JwtTokenUtilTest extends AbstractTest{
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationManagementControllerTest.class);
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Test
 	public void decodeJwtToken() throws Exception {
@@ -23,9 +28,7 @@ public class JwtTokenUtilTest extends AbstractTest{
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		
-		JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(tokenFEDERA);
-		
-		assertNotNull(jwtTokenUtil.decodeJwtTokenFedera(jwtTokenUtil.getToken()).toString() !=  null);
+		assertNotNull(jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).toString() !=  null);
 		
 		logger.info("decodeJwtToken() OUT");
 	}
