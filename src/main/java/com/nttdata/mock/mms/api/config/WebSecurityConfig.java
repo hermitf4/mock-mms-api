@@ -53,7 +53,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf().disable()
 			.addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
 			.authorizeRequests() 
-			.antMatchers("/", "/getAuthenticationFedera", "/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**", "/*.js", "/*.css", "/*.ico").permitAll()
+			.antMatchers("/", 
+					     "/getAuthenticationFedera", 
+					     "/getAuthenticationLDAP",
+					     "/swagger-resources/**", 
+					     "/swagger-ui.html", 
+					     "/v2/api-docs", 
+					     "/webjars/**", 
+					     "/*.js", 
+					     "/*.css", 
+					     "/*.ico").permitAll()
 			.anyRequest().authenticated().and()
 			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

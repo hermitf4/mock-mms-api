@@ -45,13 +45,14 @@ public class JwtTokenUtil implements Serializable {
 	@Value("classpath:public_key")
 	private transient Resource publicKey;
 
-	public String generateToken(String tokenFEDERA)
+	public String generateToken(String token, String authType)
 			throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Map<String, Object> claims = new HashMap<String, Object>();
 
 		String subJect = "mock-mms-api";
 
-		claims.put("CODICEFISCALE", tokenFEDERA);
+		claims.put("CODICEFISCALE", token);
+		claims.put("AUTH_TYPE", authType);
 
 		return doGenerateToken(claims, subJect);
 	}
@@ -138,4 +139,5 @@ public class JwtTokenUtil implements Serializable {
 		}
 
 	}
+	
 }

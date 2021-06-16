@@ -87,6 +87,34 @@ paths:
           $ref: '#/responses/response-not-found-404'
         '500':
           $ref: '#/responses/response-internal-server-error-500'
+  /getAuthenticationLDAP:
+    post:
+      tags:
+        - Authentication
+      summary: Authentication Service
+      description: Authentication Service 
+      operationId: getAuthenticationLDAP
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name : requestUserLoginLDAP
+          description: Restituisce il codice fiscale dell'utente tramite LDAP
+          schema:
+            $ref: '#/definitions/RequestUserLoginLDAP'
+      responses:
+        '200':
+          $ref: '#/responses/authentication-response'
+        '400':
+          $ref: '#/responses/response-bad-request-400'
+        '401':
+          $ref: '#/responses/response-unauthorized-401'
+        '403':
+          $ref: '#/responses/response-forbidden-403'
+        '404':
+          $ref: '#/responses/response-not-found-404'
+        '500':
+          $ref: '#/responses/response-internal-server-error-500'
 
 parameters:
   header-optimistic-lock:
@@ -95,6 +123,13 @@ parameters:
     in: header
     type: string
     required: true
+
+requests:
+  RequestUserLoginLDAP:
+    description: These are the LDAP login credentials
+    schema:      
+      $ref: '#/definitions/RequestUserLoginLDAP'
+
 responses:
   authentication-response:
     description: This is the authentication
@@ -199,9 +234,25 @@ definitions:
   authentication-response:
     allOf:
       - $ref: '#/definitions/response-base'
-    description: This is token
+    description: This authentication user
     type: object
+    properties:
+      schema:
+        $ref: '#/definitions/UserAuth-response'
+  UserAuth-response:
     properties:
       token:
         description: This is authentication token
+        type: string
+      Codice Fiscale:
+        description: This is fiscal code of user
+        type: string
+  RequestUserLoginLDAP:
+    type: object
+    properties:
+      username:
+        description: This is username
+        type: string
+      password:
+        description: This is password
         type: string

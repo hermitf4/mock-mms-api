@@ -16,7 +16,9 @@ import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
+import com.nttdata.mock.mms.api.swagger.dto.RequestUserLoginLDAPDTO;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
+import com.nttdata.mock.mms.api.swagger.models.UserAuthResponse;
 import com.nttdata.mock.mms.api.utils.Constants;
 
 
@@ -33,17 +35,53 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		List<Cookie> cookies = Optional.ofNullable(httpRequest.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
 		
-		Cookie cookieFedera = cookies.stream().filter(cookie -> cookie.getName().equals(Constants.COOKIENAME)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTIOM);
+		Cookie cookieFedera = cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTIOM);
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		try {
 			String codiceFiscale = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).getClaim("CDMCODICEFISCALE").asString();
-			String token = jwtTokenUtil.generateToken(codiceFiscale);
+			String token = jwtTokenUtil.generateToken(codiceFiscale, Constants.AUTHFEDERA);
+			
+			UserAuthResponse userAuth = new UserAuthResponse();
+			userAuth.setToken(token);
+			userAuth.setCodiceFiscale(codiceFiscale);
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");
 			result.setResultCode(200);
-			result.setToken(token);
+			result.setSchema(userAuth);
+		}catch (MockMmmsException e) {
+			result.setType("AuthenticationResponse");
+			result.setSuccess(false);
+			result.setMessage(e.getMessage());
+			result.setResultCode(e.getErrorCode());
+		} catch (Exception e1) {
+			result.setType("AuthenticationResponse");
+			result.setSuccess(false);
+			result.setMessage("Operation Failed.");
+			result.setResultCode(501);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public AuthenticationResponse getAuthenticationLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException {
+		AuthenticationResponse result = new AuthenticationResponse();
+		result.setType("AuthenticationResponse");
+		
+		try {
+			String codiceFiscale = "test";
+			String token = jwtTokenUtil.generateToken(codiceFiscale, Constants.AUTHLDAP);
+			
+			UserAuthResponse userAuth = new UserAuthResponse();
+			userAuth.setToken(token);
+			userAuth.setCodiceFiscale(codiceFiscale);
+			
+			result.setSuccess(true);
+			result.setMessage("Successful Operation.");
+			result.setResultCode(200);
+			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
 			result.setType("AuthenticationResponse");
 			result.setSuccess(false);
