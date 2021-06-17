@@ -18,6 +18,7 @@ import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
 import com.nttdata.mock.mms.api.swagger.dto.RequestUserLoginLDAPDTO;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
+import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
 import com.nttdata.mock.mms.api.swagger.models.UserAuthResponse;
 import com.nttdata.mock.mms.api.utils.Constants;
 
@@ -51,12 +52,10 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
-			result.setType("AuthenticationResponse");
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			result.setResultCode(e.getErrorCode());
 		} catch (Exception e1) {
-			result.setType("AuthenticationResponse");
 			result.setSuccess(false);
 			result.setMessage("Operation Failed.");
 			result.setResultCode(501);
@@ -71,7 +70,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		result.setType("AuthenticationResponse");
 		
 		try {
-			String codiceFiscale = "test";
+			String codiceFiscale = "MRARSS89E10H235U";
 			String token = jwtTokenUtil.generateToken(codiceFiscale, Constants.AUTHLDAP);
 			
 			UserAuthResponse userAuth = new UserAuthResponse();
@@ -83,16 +82,46 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
-			result.setType("AuthenticationResponse");
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			result.setResultCode(e.getErrorCode());
 		} catch (Exception e1) {
-			result.setType("AuthenticationResponse");
 			result.setSuccess(false);
 			result.setMessage("Operation Failed.");
 			result.setResultCode(501);
 		}
+		
+		return result;
+	}
+
+	@Override
+	public ResponseBase logout(HttpServletRequest httpRequest) throws MockMmmsException {
+		ResponseBase result = new ResponseBase();
+		result.setType("ResponseBase");
+		String jwtToken = null;
+		
+		try {
+			String requestTokenHeader = httpRequest.getHeader("X-auth");
+			
+			if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+				jwtToken = requestTokenHeader.substring(7);
+				String authType = jwtTokenUtil.validateToken(jwtToken).getClaim(Constants.AUTHTYPE).asString();
+				
+				if(authType.equals(Constants.AUTHFEDERA)) {
+					result.setSuccess(true);
+					result.setMessage("Successful Operation Logout Federa.");
+					result.setResultCode(204);
+				}else if (authType.equals(Constants.AUTHLDAP)){
+					result.setSuccess(true);
+					result.setMessage("Successful Operation Logout LDAP.");
+					result.setResultCode(200);
+				}
+			}
+		} catch (MockMmmsException e) {
+			result.setSuccess(false);
+			result.setMessage(e.getMessage());
+			result.setResultCode(e.getErrorCode());
+		} 
 		
 		return result;
 	}

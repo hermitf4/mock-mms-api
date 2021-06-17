@@ -12,7 +12,9 @@ import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
 import com.nttdata.mock.mms.api.swagger.api.AuthenticationApi;
 import com.nttdata.mock.mms.api.swagger.dto.AuthenticationResponseDTO;
 import com.nttdata.mock.mms.api.swagger.dto.RequestUserLoginLDAPDTO;
+import com.nttdata.mock.mms.api.swagger.dto.ResponseBaseDTO;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
+import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
 
 @RestController
 public class AuthenticationManagementController extends AbstractController implements AuthenticationApi{
@@ -62,5 +64,28 @@ public class AuthenticationManagementController extends AbstractController imple
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public ResponseEntity<ResponseBaseDTO> logout() {
+		
+		ResponseEntity<ResponseBaseDTO> result = null;
+		
+		Class<ResponseBaseDTO> responseBaseClass = ResponseBaseDTO.class;
+		
+		ResponseBase model = null;
+		
+		try {
+			model = iAuthenticationManagement.logout(httpRequest);
+			
+			ResponseBaseDTO modelDTO = mapper.map(model, ResponseBaseDTO.class);
+			
+			result = buildResponseEntitySuccess(modelDTO);
+		} catch (MockMmmsException e1) {
+			result = buildResponseEntityException(responseBaseClass, e1);
+		}
+		
+		return result;
+		
 	}
 }

@@ -1,9 +1,15 @@
 package com.nttdata.mock.mms.api.filters;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
+import com.nttdata.mock.mms.api.utils.Constants;
 
 
 @Component
@@ -43,8 +50,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			jwtToken = requestTokenHeader.substring(7);
 			
 			try {
-				validateToken(jwtToken, chain, request, response);
-			} catch (IllegalArgumentException | MockMmmsException e) {
+				String authType = getAuthType(jwtToken);
+				if(authType.equals(Constants.AUTHFEDERA) && checkCookieFedera(request)) {
+					validateToken(jwtToken, chain, request, response);
+				}else if (authType.equals(Constants.AUTHLDAP)){
+					validateToken(jwtToken, chain, request, response);
+				}else {
+					chain.doFilter(request, response);
+				}
+			} catch (MockMmmsException e) {
+				LOG.error("Invalid token!", e);
 				ResponseBase errorResponse = new ResponseBase();
 				errorResponse.setSuccess(false);
 				errorResponse.setMessage(e.getMessage());
@@ -57,6 +72,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 		
 	}
+	
+	private boolean checkCookieFedera(HttpServletRequest request) {
+		
+		List<Cookie> cookies = Optional.ofNullable(request.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
+		
+		return cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().isPresent();
+		
+	}
+
+	private String getAuthType(String jwtToken) throws MockMmmsException {
+		
+		return jwtTokenUtil.validateToken(jwtToken).getClaim(Constants.AUTHTYPE).asString();
+		
+	}
+	
 	
 	private void validateToken(String jwtToken, FilterChain chain, HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException, MockMmmsException {

@@ -115,6 +115,30 @@ paths:
           $ref: '#/responses/response-not-found-404'
         '500':
           $ref: '#/responses/response-internal-server-error-500'
+  /logoutApp:
+    get:
+      tags:
+        - Authentication
+      security:
+        - Bearer: []
+      summary: Authentication Service
+      description: Authentication Service 
+      operationId: logout
+      produces:
+        - application/json
+      responses:
+        '200':
+          $ref: '#/responses/response-ok-200'
+        '400':
+          $ref: '#/responses/response-bad-request-400'
+        '401':
+          $ref: '#/responses/response-unauthorized-401'
+        '403':
+          $ref: '#/responses/response-forbidden-403'
+        '404':
+          $ref: '#/responses/response-not-found-404'
+        '500':
+          $ref: '#/responses/response-internal-server-error-500'
 
 parameters:
   header-optimistic-lock:
