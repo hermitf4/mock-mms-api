@@ -34,7 +34,9 @@ import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+	
+	@Value("${jwt.expired.time}")
+	private long jwtTokenValidity;
 	
 	@Value("classpath:jwt-federa-key")
 	private transient Resource publicFederaKey;
@@ -60,7 +62,7 @@ public class JwtTokenUtil implements Serializable {
 	private String doGenerateToken(Map<String, Object> claims, String subject) throws IllegalArgumentException, JWTCreationException, MockMmmsException {
 		Instant issuedAt = Instant.now();
 
-		Builder builder = JWT.create().withSubject(subject).withIssuedAt(Date.from(issuedAt)).withExpiresAt(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY));
+		Builder builder = JWT.create().withSubject(subject).withIssuedAt(Date.from(issuedAt)).withExpiresAt(new Date(System.currentTimeMillis() + jwtTokenValidity));
 
 		claims.forEach((claimName, value) -> builder.withClaim(claimName, StringUtils.join(value)));
 
