@@ -10,7 +10,7 @@ public enum MockAuthExceptionEnum implements Supplier<MockMmmsException>{
 	
 	//---------------HTTP 401---------------------/
 	
-	TOKEN_FEDERA_EXCEPTIOM(new MockMmmsException(HttpStatus.UNAUTHORIZED.value(), 401001, "Federa Token not found"));
+	TOKEN_FEDERA_EXCEPTION(new MockMmmsException(HttpStatus.UNAUTHORIZED.value(), 401001, "Federa Token not found"));
 	
 	private final MockMmmsException exception;
 
