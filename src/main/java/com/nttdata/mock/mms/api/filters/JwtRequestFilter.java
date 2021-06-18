@@ -40,8 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	private JwtTokenUtil jwtTokenUtil;
 	
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 
 		final String requestTokenHeader = request.getHeader("X-auth");
 		String jwtToken = null;
@@ -52,11 +51,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				String authType = getAuthType(jwtToken);
 				if(authType.equals(Constants.AUTHFEDERA) && checkCookieFedera(request)) {
-					validateToken(jwtToken, chain, request, response);
+					validateToken(jwtToken, request);
 				}else if (authType.equals(Constants.AUTHLDAP)){
-					validateToken(jwtToken, chain, request, response);
-				}else {
-					chain.doFilter(request, response);
+					validateToken(jwtToken, request);
 				}
 			} catch (MockMmmsException e) {
 				LOG.error("Invalid token!", e);
@@ -65,12 +62,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				errorResponse.setMessage(e.getMessage());
 	            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	            response.getWriter().write(convertObjectToJson(errorResponse));
-	            chain.doFilter(request, response);
 			}
-		} else {
-			chain.doFilter(request, response);
-		}
+		} 
 		
+		chain.doFilter(request, response);
 	}
 	
 	private boolean checkCookieFedera(HttpServletRequest request) {
@@ -88,18 +83,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 	
 	
-	private void validateToken(String jwtToken, FilterChain chain, HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException, MockMmmsException {
+	private void validateToken(String jwtToken, HttpServletRequest request) throws MockMmmsException {
 		
-			if (SecurityContextHolder.getContext().getAuthentication() == null && jwtTokenUtil.validateToken(jwtToken) != null) {			
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-				 = new UsernamePasswordAuthenticationToken(jwtToken, jwtToken);
-				usernamePasswordAuthenticationToken
-						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);	
+		if (SecurityContextHolder.getContext().getAuthentication() == null && jwtTokenUtil.validateToken(jwtToken) != null) {	
+			
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(jwtToken, jwtToken);
+			
+			usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);	
+			
 		}
-		chain.doFilter(request, response);
+			
 	}
 	
 	private String convertObjectToJson(Object object) throws JsonProcessingException {
