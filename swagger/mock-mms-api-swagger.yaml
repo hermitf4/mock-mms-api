@@ -268,7 +268,7 @@ definitions:
       token:
         description: This is authentication token
         type: string
-      Codice Fiscale:
+      codiceFiscale:
         description: This is fiscal code of user
         type: string
   RequestUserLoginLDAP:
