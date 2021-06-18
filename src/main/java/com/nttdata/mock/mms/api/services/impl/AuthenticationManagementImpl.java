@@ -36,7 +36,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		List<Cookie> cookies = Optional.ofNullable(httpRequest.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
 		
-		Cookie cookieFedera = cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTIOM);
+		Cookie cookieFedera = cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTION);
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		try {
