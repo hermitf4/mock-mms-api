@@ -8,6 +8,12 @@ public class Constants {
 	public static final String AUTHFEDERA = "AuthFEDERA";
 	public static final String AUTHLDAP = "AuthLDAP";
 	public static final String AUTHTYPE = "AUTH_TYPE";
+	
+	
+	//claims
+	public static final String CODICEFISCALE_CLAIM = "CODICEFISCALE";
+	public static final String NOME_CLAIM = "NOME";
+	public static final String COGNOME_CLAIM = "COGNOME";
 
 	private Constants() {
 

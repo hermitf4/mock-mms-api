@@ -1,7 +1,9 @@
 package com.nttdata.mock.mms.api.services.impl;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
@@ -40,12 +43,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		try {
-			String codiceFiscale = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).getClaim("CDMCODICEFISCALE").asString();
-			String token = jwtTokenUtil.generateToken(codiceFiscale, Constants.AUTHFEDERA);
-			
-			UserAuthResponse userAuth = new UserAuthResponse();
-			userAuth.setToken(token);
-			userAuth.setCodiceFiscale(codiceFiscale);
+			UserAuthResponse userAuth = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA);
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");
@@ -71,7 +69,17 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		
 		try {
 			String codiceFiscale = "MRARSS89E10H235U";
-			String token = jwtTokenUtil.generateToken(codiceFiscale, Constants.AUTHLDAP);
+			String nome = "Utente";
+			String cognome = "Prova";
+			
+			Map<String, Object> claims = new HashMap<String, Object>();
+			
+			claims.put(Constants.CODICEFISCALE_CLAIM, codiceFiscale);
+			claims.put(Constants.NOME_CLAIM, nome);
+			claims.put(Constants.COGNOME_CLAIM, cognome);
+			claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
+			
+			String token = jwtTokenUtil.generateToken(claims);
 			
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(token);

@@ -29,6 +29,8 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
+import com.nttdata.mock.mms.api.swagger.models.UserAuthResponse;
+import com.nttdata.mock.mms.api.utils.Constants;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -47,14 +49,14 @@ public class JwtTokenUtil implements Serializable {
 	@Value("classpath:public_key")
 	private transient Resource publicKey;
 
-	public String generateToken(String token, String authType)
+	public String generateToken(Map<String, Object> claims)
 			throws IllegalArgumentException, JWTCreationException, MockMmmsException {
-		Map<String, Object> claims = new HashMap<String, Object>();
+		//Map<String, Object> claims = new HashMap<String, Object>();
 
-		String subJect = "mock-mms-api";
+		String subJect = claims.get(Constants.CODICEFISCALE_CLAIM).toString();
 
-		claims.put("CODICEFISCALE", token);
-		claims.put("AUTH_TYPE", authType);
+		//claims.put("CODICEFISCALE", token);
+		//claims.put("AUTH_TYPE", authType);
 
 		return doGenerateToken(claims, subJect);
 	}
@@ -130,16 +132,32 @@ public class JwtTokenUtil implements Serializable {
 		return key;
 	}
 
-	public DecodedJWT decodeJwtTokenFedera(String token) throws MockMmmsException {
+	public UserAuthResponse decodeJwtTokenFedera(String token) throws MockMmmsException {
 
 		JWTVerifier verifiefToken = JWT.require(Algorithm.RSA256((RSAPublicKey) getPublicFederaKey(), null)).build();
 
 		try {
-			return verifiefToken.verify(token);
+			DecodedJWT decodeJwt = verifiefToken.verify(token);
+			Map<String, Object> claims = new HashMap<String, Object>();
+			
+			String codiceFiscale = decodeJwt.getClaim(Constants.CODICEFISCALE_CLAIM).asString();
+			String nome = decodeJwt.getClaim(Constants.NOME_CLAIM).asString();
+			String cognome = decodeJwt.getClaim(Constants.COGNOME_CLAIM).asString();
+			
+			claims.put(Constants.CODICEFISCALE_CLAIM, codiceFiscale);
+			claims.put(Constants.NOME_CLAIM, nome);
+			claims.put(Constants.COGNOME_CLAIM, cognome);
+			claims.put(Constants.AUTHTYPE, Constants.AUTHFEDERA);
+			
+			UserAuthResponse userAuth = new UserAuthResponse();
+			userAuth.setToken(generateToken(claims));
+			userAuth.setCodiceFiscale(codiceFiscale);
+			
+			return userAuth;
 		} catch (Exception e) {
 			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, e.getMessage());
 		}
 
 	}
-	
+
 }
