@@ -51,12 +51,8 @@ public class JwtTokenUtil implements Serializable {
 
 	public String generateToken(Map<String, Object> claims)
 			throws IllegalArgumentException, JWTCreationException, MockMmmsException {
-		//Map<String, Object> claims = new HashMap<String, Object>();
 
 		String subJect = claims.get(Constants.CODICEFISCALE_CLAIM).toString();
-
-		//claims.put("CODICEFISCALE", token);
-		//claims.put("AUTH_TYPE", authType);
 
 		return doGenerateToken(claims, subJect);
 	}

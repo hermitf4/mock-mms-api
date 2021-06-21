@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -25,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
 import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
@@ -50,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			
 			try {
 				String authType = getAuthType(jwtToken);
-				if(authType.equals(Constants.AUTHFEDERA) && checkCookieFedera(request)) {
+				if(authType.equals(Constants.AUTHFEDERA) && checkCookieFedera(request) != null) {
 					validateToken(jwtToken, request);
 				}else if (authType.equals(Constants.AUTHLDAP)){
 					validateToken(jwtToken, request);
@@ -60,7 +60,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				ResponseBase errorResponse = new ResponseBase();
 				errorResponse.setSuccess(false);
 				errorResponse.setMessage(e.getMessage());
-	            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				errorResponse.setResultCode(401001);
+	            response.setStatus(e.getHttpCode());
 	            response.getWriter().write(convertObjectToJson(errorResponse));
 			}
 		} 
@@ -68,11 +69,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		chain.doFilter(request, response);
 	}
 	
-	private boolean checkCookieFedera(HttpServletRequest request) {
+	private Cookie checkCookieFedera(HttpServletRequest request) throws MockMmmsException{
 		
 		List<Cookie> cookies = Optional.ofNullable(request.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
 		
-		return cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().isPresent();
+		return cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTION);
 		
 	}
 

@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
@@ -84,6 +83,8 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(token);
 			userAuth.setCodiceFiscale(codiceFiscale);
+			userAuth.setNome(nome);
+			userAuth.setCognome(cognome);
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");

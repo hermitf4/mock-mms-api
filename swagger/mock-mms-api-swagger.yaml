@@ -271,6 +271,12 @@ definitions:
       codiceFiscale:
         description: This is fiscal code of user
         type: string
+      nome :
+        description : This is the name of user
+        type: string
+      cognome:
+        description: This is the last name of user
+        type: string
   RequestUserLoginLDAP:
     type: object
     properties:
