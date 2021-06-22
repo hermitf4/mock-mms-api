@@ -54,7 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					     "/webjars/**",
 					     "/*.js", 
 					     "/*.css", 
-					     "/*.ico").permitAll()
+					     "/*.ico",
+					     "/login").permitAll()
 			.anyRequest().authenticated().and()
 			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
 	}
