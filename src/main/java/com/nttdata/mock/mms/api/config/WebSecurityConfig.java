@@ -56,8 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					     "/*.css", 
 					     "/*.ico").permitAll()
 			.anyRequest().authenticated().and()
-			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
 	}
 	
 }
