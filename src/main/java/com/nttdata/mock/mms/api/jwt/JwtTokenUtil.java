@@ -148,6 +148,8 @@ public class JwtTokenUtil implements Serializable {
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(generateToken(claims));
 			userAuth.setCodiceFiscale(codiceFiscale);
+			userAuth.setNome(nome);
+			userAuth.setCognome(cognome);
 			
 			return userAuth;
 		} catch (Exception e) {
