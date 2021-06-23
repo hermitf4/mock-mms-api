@@ -65,7 +65,7 @@ paths:
           $ref: '#/responses/response-not-found-404'
         '500':
           $ref: '#/responses/response-internal-server-error-500'
-  /getAuthenticationFedera:
+  /getAuthentication:
     get:
       tags:
         - Authentication
@@ -87,7 +87,7 @@ paths:
           $ref: '#/responses/response-not-found-404'
         '500':
           $ref: '#/responses/response-internal-server-error-500'
-  /getAuthenticationLDAP:
+  /loginLDAP:
     post:
       tags:
         - Authentication

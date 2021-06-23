@@ -46,8 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
 			.authorizeRequests() 
 			.antMatchers("/", 
-					     "/getAuthenticationFedera", 
-					     "/getAuthenticationLDAP",
+					     "/getAuthentication", 
+					     "/loginLDAP",
 					     "/swagger-resources/**", 
 					     "/swagger-ui.html", 
 					     "/v2/api-docs", 
