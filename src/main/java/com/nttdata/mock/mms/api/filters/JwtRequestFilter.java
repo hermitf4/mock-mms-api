@@ -1,8 +1,13 @@
 package com.nttdata.mock.mms.api.filters;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,18 +21,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
-import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
 import com.nttdata.mock.mms.api.utils.Constants;
 
 
@@ -37,11 +42,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	private static final Logger LOG = LoggerFactory.getLogger(JwtRequestFilter.class);
 	
 	@Autowired
+    private ObjectMapper objectMapper;
+	
+	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-
+		
+		LOG.debug("JwtRequestFilter.doFilterInternal() IN");
+		
 		final String requestTokenHeader = request.getHeader("X-auth");
 		String jwtToken = null;
 		
@@ -57,15 +67,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				}
 			} catch (MockMmmsException e) {
 				LOG.error("Invalid token!", e);
-				ResponseBase errorResponse = new ResponseBase();
-				errorResponse.setSuccess(false);
-				errorResponse.setMessage(e.getMessage());
-				errorResponse.setResultCode(401001);
-	            response.setStatus(e.getHttpCode());
-	            response.getWriter().write(convertObjectToJson(errorResponse));
+				PrintWriter out = response.getWriter();
+		        Map<String, Object> data = new HashMap<>();
+		        data.put("timestamp", Calendar.getInstance().getTime());
+		        data.put("date", LocalDateTime.now());
+		        data.put("exception", e.getMessage());
+		        data.put("httpCode", e.getHttpCode());
+		        data.put("errorCode", e.getErrorCode());
+		        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		        String jsonString = objectMapper.writeValueAsString(data);
+		        response.getWriter().print(jsonString);
+		        out.flush();
 			}
 		} 
 		
+		LOG.debug("JwtRequestFilter.doFilterInternal() OUT");
 		chain.doFilter(request, response);
 	}
 	
@@ -97,12 +114,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 			
 	}
-	
-	private String convertObjectToJson(Object object) throws JsonProcessingException {
-        if (object == null) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(object);
-    }
+
 }

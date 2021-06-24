@@ -5,18 +5,34 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String email;
-	
+	private String password;
 	
 	public User() {
 		super();
 	}
-
 	
 	public User(String firstName, String lastName, String email) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
+	}
+	
+	public User(String firstName, String lastName, String email, String password) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 

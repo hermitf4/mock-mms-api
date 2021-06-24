@@ -26,54 +26,5 @@ public class SwaggerConfigProperties {
 
 	@Value("${swagger.apiKeyName}")
 	private String apiKeyName;
-
-	public String getApiVersion() {
-		return apiVersion;
-	}
-
-	public void setApiVersion(String apiVersion) {
-		this.apiVersion = apiVersion;
-	}
-
-	public String getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(String enabled) {
-		this.enabled = enabled;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getBasePackage() {
-		return basePackage;
-	}
-
-	public void setBasePackage(String basePackage) {
-		this.basePackage = basePackage;
-	}
-
-	public String getApiKeyName() {
-		return apiKeyName;
-	}
-
-	public void setApiKeyName(String apiKeyName) {
-		this.apiKeyName = apiKeyName;
-	}
-	
 	
 }

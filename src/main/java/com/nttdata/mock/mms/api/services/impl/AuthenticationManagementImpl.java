@@ -14,9 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nttdata.mock.mms.api.config.UsersConfig;
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
+import com.nttdata.mock.mms.api.model.User;
 import com.nttdata.mock.mms.api.services.IAuthenticationManagement;
 import com.nttdata.mock.mms.api.swagger.dto.RequestUserLoginLDAPDTO;
 import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
@@ -30,6 +32,9 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private UsersConfig usersConfig;
 	
 	@Override
 	public AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException {
@@ -67,24 +72,27 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		result.setType("AuthenticationResponse");
 		
 		try {
-			String codiceFiscale = "MRARSS89E10H235U";
-			String nome = "Utente";
-			String cognome = "Prova";
+			
+			User user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
+			
+			if(user == null) {
+				throw MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get();
+			}
 			
 			Map<String, Object> claims = new HashMap<String, Object>();
 			
-			claims.put(Constants.CODICEFISCALE_CLAIM, codiceFiscale);
-			claims.put(Constants.NOME_CLAIM, nome);
-			claims.put(Constants.COGNOME_CLAIM, cognome);
+			claims.put(Constants.CODICEFISCALE_CLAIM, request.getUsername().toUpperCase());
+			claims.put(Constants.NOME_CLAIM, user.getFirstName());
+			claims.put(Constants.COGNOME_CLAIM, user.getLastName());
 			claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
 			
 			String token = jwtTokenUtil.generateToken(claims);
 			
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(token);
-			userAuth.setCodiceFiscale(codiceFiscale);
-			userAuth.setNome(nome);
-			userAuth.setCognome(cognome);
+			userAuth.setCodiceFiscale(request.getUsername().toUpperCase());
+			userAuth.setNome(user.getFirstName());
+			userAuth.setCognome(user.getLastName());
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");
