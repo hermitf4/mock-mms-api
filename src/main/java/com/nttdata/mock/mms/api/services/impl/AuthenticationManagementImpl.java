@@ -25,6 +25,7 @@ import com.nttdata.mock.mms.api.swagger.models.AuthenticationResponse;
 import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
 import com.nttdata.mock.mms.api.swagger.models.UserAuthResponse;
 import com.nttdata.mock.mms.api.utils.Constants;
+import com.nttdata.mock.mms.api.utils.Loggable;
 
 
 @Service
@@ -37,6 +38,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	private UsersConfig usersConfig;
 	
 	@Override
+	@Loggable
 	public AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
@@ -67,6 +69,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	}
 
 	@Override
+	@Loggable
 	public AuthenticationResponse getAuthenticationLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
@@ -111,6 +114,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	}
 
 	@Override
+	@Loggable
 	public ResponseBase logout(HttpServletRequest httpRequest) throws MockMmmsException {
 		ResponseBase result = new ResponseBase();
 		result.setType("ResponseBase");

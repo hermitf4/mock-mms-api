@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 
 import com.nttdata.mock.mms.api.model.User;
 import com.nttdata.mock.mms.api.services.IUserManagement;
+import com.nttdata.mock.mms.api.utils.Loggable;
 
 @Service(value = "UserManagement")
 public class UserManagementImpl implements IUserManagement{
 
 	@Override
+	@Loggable
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
 		

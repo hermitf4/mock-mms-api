@@ -50,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 		
-		LOG.debug("JwtRequestFilter.doFilterInternal() IN");
+		LOG.info("JwtRequestFilter.doFilterInternal() IN");
 		
 		final String requestTokenHeader = request.getHeader("X-auth");
 		String jwtToken = null;
@@ -82,7 +82,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			}
 		} 
 		
-		LOG.debug("JwtRequestFilter.doFilterInternal() OUT");
+		LOG.info("JwtRequestFilter.doFilterInternal() OUT");
 		chain.doFilter(request, response);
 	}
 	
