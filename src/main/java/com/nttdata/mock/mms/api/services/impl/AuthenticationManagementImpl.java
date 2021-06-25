@@ -71,14 +71,13 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
 		
+		User user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
+		
+		if(user == null) {
+			throw MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get();
+		}
+		
 		try {
-			
-			User user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
-			
-			if(user == null) {
-				throw MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get();
-			}
-			
 			Map<String, Object> claims = new HashMap<String, Object>();
 			
 			claims.put(Constants.CODICEFISCALE_CLAIM, request.getUsername().toUpperCase());
