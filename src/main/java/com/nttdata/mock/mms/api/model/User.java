@@ -1,10 +1,14 @@
 package com.nttdata.mock.mms.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class User {
 	
 	private String firstName;
 	private String lastName;
 	private String email;
+	
+	@JsonIgnoreProperties
 	private String password;
 	
 	public User() {

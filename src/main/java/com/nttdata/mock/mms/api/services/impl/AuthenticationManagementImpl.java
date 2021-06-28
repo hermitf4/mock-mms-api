@@ -11,6 +11,9 @@ import java.util.stream.Stream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,8 @@ import com.nttdata.mock.mms.api.utils.Loggable;
 @Service
 public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	
+	private static final Logger LOG = LoggerFactory.getLogger(AuthenticationManagementImpl.class);
+	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
@@ -39,7 +44,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	
 	@Override
 	@Loggable
-	public AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException {
+	public AuthenticationResponse getAuthentication(HttpServletRequest httpRequest) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
 		
@@ -56,10 +61,12 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
+			LOG.error(e.getMessage(), e);
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			result.setResultCode(e.getErrorCode());
 		} catch (Exception e1) {
+			LOG.error(e1.getMessage(), e1);
 			result.setSuccess(false);
 			result.setMessage("Operation Failed.");
 			result.setResultCode(501);
@@ -70,41 +77,44 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 
 	@Override
 	@Loggable
-	public AuthenticationResponse getAuthenticationLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException {
+	public AuthenticationResponse loginLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException {
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
 		
-		User user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
+		ImmutablePair<String, User> user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
 		
 		if(user == null) {
+			LOG.error("Bad Credentials", MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get());
 			throw MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get();
 		}
 		
 		try {
 			Map<String, Object> claims = new HashMap<String, Object>();
 			
-			claims.put(Constants.CODICEFISCALE_CLAIM, request.getUsername().toUpperCase());
-			claims.put(Constants.NOME_CLAIM, user.getFirstName());
-			claims.put(Constants.COGNOME_CLAIM, user.getLastName());
+			claims.put(Constants.CODICEFISCALE_CLAIM, user.getKey().toUpperCase());
+			claims.put(Constants.NOME_CLAIM, user.getValue().getFirstName());
+			claims.put(Constants.COGNOME_CLAIM, user.getValue().getLastName());
 			claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
 			
 			String token = jwtTokenUtil.generateToken(claims);
 			
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(token);
-			userAuth.setCodiceFiscale(request.getUsername().toUpperCase());
-			userAuth.setNome(user.getFirstName());
-			userAuth.setCognome(user.getLastName());
+			userAuth.setCodiceFiscale(user.getKey().toUpperCase());
+			userAuth.setNome(user.getValue().getFirstName());
+			userAuth.setCognome(user.getValue().getLastName());
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
+			LOG.error(e.getMessage(), e);
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			result.setResultCode(e.getErrorCode());
 		} catch (Exception e1) {
+			LOG.error(e1.getMessage(), e1);
 			result.setSuccess(false);
 			result.setMessage("Operation Failed.");
 			result.setResultCode(501);
@@ -138,6 +148,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 				}
 			}
 		} catch (MockMmmsException e) {
+			LOG.error(e.getMessage(), e);
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			result.setResultCode(e.getErrorCode());

@@ -23,7 +23,7 @@ public class AuthenticationManagementController extends AbstractController imple
 	IAuthenticationManagement iAuthenticationManagement;
 	
 	@Override
-	public ResponseEntity<AuthenticationResponseDTO> getAuthenticationFedera(){
+	public ResponseEntity<AuthenticationResponseDTO> getAuthentication(){
 		
 		ResponseEntity<AuthenticationResponseDTO> result = null;
 		
@@ -32,7 +32,7 @@ public class AuthenticationManagementController extends AbstractController imple
 		AuthenticationResponse model = null;
 		
 		try {
-			model = iAuthenticationManagement.getAuthenticationFedera(httpRequest);
+			model = iAuthenticationManagement.getAuthentication(httpRequest);
 			
 			AuthenticationResponseDTO modelDTO = mapper.map(model, AuthenticationResponseDTO.class);
 			
@@ -45,7 +45,7 @@ public class AuthenticationManagementController extends AbstractController imple
 	}
 	
 	@Override
-	public ResponseEntity<AuthenticationResponseDTO> getAuthenticationLDAP(@Valid @RequestBody RequestUserLoginLDAPDTO request) {
+	public ResponseEntity<AuthenticationResponseDTO> loginLDAP(@Valid @RequestBody RequestUserLoginLDAPDTO request) {
 		
 		ResponseEntity<AuthenticationResponseDTO> result = null;
 		
@@ -54,7 +54,7 @@ public class AuthenticationManagementController extends AbstractController imple
 		AuthenticationResponse model = null;
 		
 		try {
-			model = iAuthenticationManagement.getAuthenticationLDAP(request);
+			model = iAuthenticationManagement.loginLDAP(request);
 			
 			AuthenticationResponseDTO modelDTO = mapper.map(model, AuthenticationResponseDTO.class);
 			

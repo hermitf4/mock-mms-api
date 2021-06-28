@@ -66,7 +66,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 					validateToken(jwtToken, request);
 				}
 			} catch (MockMmmsException e) {
-				LOG.error("Invalid token!", e);
+				LOG.error(e.getMessage(), e);
 				PrintWriter out = response.getWriter();
 		        Map<String, Object> data = new HashMap<>();
 		        data.put("timestamp", Calendar.getInstance().getTime());
@@ -79,6 +79,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		        String jsonString = objectMapper.writeValueAsString(data);
 		        response.getWriter().print(jsonString);
 		        out.flush();
+		        return;
 			}
 		} 
 		

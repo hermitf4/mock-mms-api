@@ -9,9 +9,9 @@ import com.nttdata.mock.mms.api.swagger.models.ResponseBase;
 
 public interface IAuthenticationManagement {
 	
-	AuthenticationResponse getAuthenticationFedera(HttpServletRequest httpRequest) throws MockMmmsException;
+	AuthenticationResponse getAuthentication(HttpServletRequest httpRequest) throws MockMmmsException;
 
-	AuthenticationResponse getAuthenticationLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException;
+	AuthenticationResponse loginLDAP(RequestUserLoginLDAPDTO request) throws MockMmmsException;
 
 	ResponseBase logout(HttpServletRequest httpRequest) throws MockMmmsException;
 	
