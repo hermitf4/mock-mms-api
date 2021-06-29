@@ -17,10 +17,10 @@ public class UsersConfig {
 	public Map<String, User> users(){
 		
 		Map<String, User> map = new HashMap<String, User>();
-	    map.put("GTFRHR45RT6RDG56", new User("Danilo","Fazio", "danilo.fazio@nttdata.com", "password"));
-	    map.put("EG454GTG6HDG5G5H", new User("Carmelo","Milordo", "carmelo.milordo@nttdata.com", "password"));
-	    map.put("NNNVCN96C19D005H", new User("Vincenzo","Iannini", "vincenzo.iannini@nttdata.com", "password"));
-	    map.put("RMNMRC66H06A944T", new User("MARCO","ROMANELLI", "MARCO.ROMANELLI@LIBERO.IT", "password"));
+	    map.put("DANILO.FAZIO", new User("Danilo","Fazio", "danilo.fazio@nttdata.com", "password", "GTFRHR45RT6RDG56"));
+	    map.put("CARMELO.MILORDO", new User("Carmelo","Milordo", "carmelo.milordo@nttdata.com", "password", "EG454GTG6HDG5G5H"));
+	    map.put("VINCENZO.IANNINI", new User("Vincenzo","Iannini", "vincenzo.iannini@nttdata.com", "password", "NNNVCN96C19D005H"));
+	    map.put("MARIO.ROMANELLI", new User("MARCO","ROMANELLI", "MARCO.ROMANELLI@LIBERO.IT", "password", "RMNMRC66H06A944T"));
 	    
 	    return map;
 	    

@@ -10,6 +10,9 @@ public class User {
 	
 	@JsonIgnoreProperties
 	private String password;
+	@JsonIgnoreProperties
+	private String codiceFiscale;
+	
 	
 	public User() {
 		super();
@@ -21,13 +24,14 @@ public class User {
 		this.lastName = lastName;
 		this.email = email;
 	}
-	
-	public User(String firstName, String lastName, String email, String password) {
+
+	public User(String firstName, String lastName, String email, String password, String codiceFiscale) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+		this.codiceFiscale = codiceFiscale;
 	}
 
 	public String getPassword() {
@@ -69,6 +73,14 @@ public class User {
 		this.email = email;
 	}
 
+
+	public String getCodiceFiscale() {
+		return codiceFiscale;
+	}
+
+	public void setCodiceFiscale(String codiceFiscale) {
+		this.codiceFiscale = codiceFiscale;
+	}
 
 	@Override
 	public String toString() {

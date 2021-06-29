@@ -91,18 +91,18 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		try {
 			Map<String, Object> claims = new HashMap<String, Object>();
 			
-			claims.put(Constants.CODICEFISCALE_CLAIM, user.getKey().toUpperCase());
-			claims.put(Constants.NOME_CLAIM, user.getValue().getFirstName());
-			claims.put(Constants.COGNOME_CLAIM, user.getValue().getLastName());
+			claims.put(Constants.CODICEFISCALE_CLAIM, user.getValue().getCodiceFiscale().toUpperCase());
+			claims.put(Constants.NOME_CLAIM, user.getValue().getFirstName().toUpperCase());
+			claims.put(Constants.COGNOME_CLAIM, user.getValue().getLastName().toUpperCase());
 			claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
 			
 			String token = jwtTokenUtil.generateToken(claims);
 			
 			UserAuthResponse userAuth = new UserAuthResponse();
 			userAuth.setToken(token);
-			userAuth.setCodiceFiscale(user.getKey().toUpperCase());
-			userAuth.setNome(user.getValue().getFirstName());
-			userAuth.setCognome(user.getValue().getLastName());
+			userAuth.setCodiceFiscale(user.getValue().getCodiceFiscale().toUpperCase());
+			userAuth.setNome(user.getValue().getFirstName().toUpperCase());
+			userAuth.setCognome(user.getValue().getLastName().toUpperCase());
 			
 			result.setSuccess(true);
 			result.setMessage("Successful Operation.");
