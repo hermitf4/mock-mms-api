@@ -60,11 +60,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			
 			try {
 				String authType = getAuthType(jwtToken);
-				if(authType.equals(Constants.AUTHFEDERA) && checkCookieFedera(request) != null) {
-					validateToken(jwtToken, request);
-				}else if (authType.equals(Constants.AUTHLDAP)){
-					validateToken(jwtToken, request);
+				if(authType.equals(Constants.AUTHFEDERA)) {
+					checkCookieFedera(request);
 				}
+				validateToken(jwtToken, request);
 			} catch (MockMmmsException e) {
 				LOG.error(e.getMessage(), e);
 				PrintWriter out = response.getWriter();
@@ -87,11 +86,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		chain.doFilter(request, response);
 	}
 	
-	private Cookie checkCookieFedera(HttpServletRequest request) throws MockMmmsException{
+	private void checkCookieFedera(HttpServletRequest request) throws MockMmmsException{
 		
 		List<Cookie> cookies = Optional.ofNullable(request.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
 		
-		return cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTION);
+		cookies.stream().filter(cookie -> cookie.getName().equals(Constants.AUTHFEDERA)).findAny().orElseThrow(MockAuthExceptionEnum.TOKEN_FEDERA_EXCEPTION);
 		
 	}
 

@@ -3,8 +3,6 @@ package com.nttdata.mock.mms.api.controllers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.UnsupportedEncodingException;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +13,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.nttdata.mock.mms.api.AbstractTest;
 
-public class AuthenticationManagementControllerTest extends AbstractTest{
+class AuthenticationManagementControllerTest extends AbstractTest{
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationManagementControllerTest.class);
 	
 	@Test
-	public void getAuthenticationFedera() throws Exception {
+	void getAuthenticationFedera() throws Exception {
 		logger.info("getAuthenticationFedera() IN");
 		
 		String url = "/getAuthenticationFedera";

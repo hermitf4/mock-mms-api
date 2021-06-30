@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.mock.mms.api.config.UsersConfig;
@@ -62,14 +63,10 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
 			LOG.error(e.getMessage(), e);
-			result.setSuccess(false);
-			result.setMessage(e.getMessage());
-			result.setResultCode(e.getErrorCode());
+			throw e;
 		} catch (Exception e1) {
 			LOG.error(e1.getMessage(), e1);
-			result.setSuccess(false);
-			result.setMessage("Operation Failed.");
-			result.setResultCode(501);
+			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
 		return result;
@@ -110,14 +107,10 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
 			LOG.error(e.getMessage(), e);
-			result.setSuccess(false);
-			result.setMessage(e.getMessage());
-			result.setResultCode(e.getErrorCode());
+			throw e;
 		} catch (Exception e1) {
 			LOG.error(e1.getMessage(), e1);
-			result.setSuccess(false);
-			result.setMessage("Operation Failed.");
-			result.setResultCode(501);
+			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
 		return result;
@@ -149,9 +142,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			}
 		} catch (MockMmmsException e) {
 			LOG.error(e.getMessage(), e);
-			result.setSuccess(false);
-			result.setMessage(e.getMessage());
-			result.setResultCode(e.getErrorCode());
+			throw e;
 		} 
 		
 		return result;
