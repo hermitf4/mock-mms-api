@@ -13,12 +13,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.nttdata.mock.mms.api.AbstractTest;
 
-public class UserManagementControllerTest extends AbstractTest{
+class UserManagementControllerTest extends AbstractTest{
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserManagementControllerTest.class);
 	
 	@Test
-	public void getUsers() throws Exception {
+	void getUsers() throws Exception {
 		logger.info("getUsers() IN");
 		
 		String url = "/getUsers";

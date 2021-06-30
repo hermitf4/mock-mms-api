@@ -62,10 +62,8 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
-			LOG.error(e.getMessage(), e);
 			throw e;
-		} catch (Exception e1) {
-			LOG.error(e1.getMessage(), e1);
+		}catch (Exception e1) {
 			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
@@ -86,7 +84,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		}
 		
 		try {
-			Map<String, Object> claims = new HashMap<String, Object>();
+			Map<String, Object> claims = new HashMap<>();
 			
 			claims.put(Constants.CODICEFISCALE_CLAIM, user.getValue().getCodiceFiscale().toUpperCase());
 			claims.put(Constants.NOME_CLAIM, user.getValue().getFirstName().toUpperCase());
@@ -106,10 +104,8 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setResultCode(200);
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
-			LOG.error(e.getMessage(), e);
 			throw e;
-		} catch (Exception e1) {
-			LOG.error(e1.getMessage(), e1);
+		}catch (Exception e1) {
 			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
@@ -140,8 +136,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 					result.setResultCode(200);
 				}
 			}
-		} catch (MockMmmsException e) {
-			LOG.error(e.getMessage(), e);
+		}catch (MockMmmsException e) {
 			throw e;
 		} 
 		

@@ -27,7 +27,7 @@ class JwtTokenUtilTest extends AbstractTest{
 		
 		String tokenFEDERA = cookieFedera.getValue();
 		
-		assertNotNull(jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).toString() !=  null);
+		assertNotNull(jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA).toString());
 		
 		logger.info("decodeJwtToken() OUT");
 	}

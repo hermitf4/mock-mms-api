@@ -16,7 +16,7 @@ public class UsersConfig {
 	@Bean 
 	public Map<String, User> users(){
 		
-		Map<String, User> map = new HashMap<String, User>();
+		Map<String, User> map = new HashMap<>();
 	    map.put("DANILO.FAZIO", new User("Danilo","Fazio", "danilo.fazio@nttdata.com", "password", "GTFRHR45RT6RDG56"));
 	    map.put("CARMELO.MILORDO", new User("Carmelo","Milordo", "carmelo.milordo@nttdata.com", "password", "EG454GTG6HDG5G5H"));
 	    map.put("VINCENZO.IANNINI", new User("Vincenzo","Iannini", "vincenzo.iannini@nttdata.com", "password", "NNNVCN96C19D005H"));
@@ -30,7 +30,7 @@ public class UsersConfig {
 
 		User user = users().get(username);
 		
-		return (user != null && user.getPassword().equals(password)) ? new ImmutablePair<String, User>(username, user) : null;
+		return (user != null && user.getPassword().equals(password)) ? new ImmutablePair<>(username, user) : null;
 		
 	}
 	

@@ -134,7 +134,7 @@ public class JwtTokenUtil implements Serializable {
 
 		try {
 			DecodedJWT decodeJwt = verifiefToken.verify(token);
-			Map<String, Object> claims = new HashMap<String, Object>();
+			Map<String, Object> claims = new HashMap<>();
 			
 			String codiceFiscale = decodeJwt.getClaim(Constants.CODICEFISCALE_CLAIM).asString();
 			String nome = decodeJwt.getClaim(Constants.NOME_CLAIM).asString();

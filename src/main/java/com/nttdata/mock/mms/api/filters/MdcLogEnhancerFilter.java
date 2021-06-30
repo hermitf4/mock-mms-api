@@ -25,7 +25,7 @@ public class MdcLogEnhancerFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-
+		// Do nothing.
 	}
 	
 	@Override
@@ -44,6 +44,6 @@ public class MdcLogEnhancerFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		
+		// Do nothing.
 	}
 }

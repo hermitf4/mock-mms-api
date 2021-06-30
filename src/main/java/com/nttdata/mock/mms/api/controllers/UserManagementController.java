@@ -32,7 +32,7 @@ public class UserManagementController extends AbstractController implements User
 			
 			List<UserResponseDTO> modelDTO = model.stream().map(user -> mapper.map(user, UserResponseDTO.class)).collect(Collectors.toList());
 			
-			result = new ResponseEntity<List<UserResponseDTO>>(modelDTO, HttpStatus.OK);
+			result = new ResponseEntity<>(modelDTO, HttpStatus.OK);
 		} catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

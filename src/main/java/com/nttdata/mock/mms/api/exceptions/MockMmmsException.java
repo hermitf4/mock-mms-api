@@ -57,7 +57,8 @@ public class MockMmmsException extends Exception {
 	public String getLabel() {
 		return label;
 	}
-
+	
+	@Override
 	public String getMessage() {
 		return message;
 	}

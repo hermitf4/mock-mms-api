@@ -15,7 +15,7 @@ public class UserManagementImpl implements IUserManagement{
 	@Override
 	@Loggable
 	public List<User> getUsers() {
-		List<User> users = new ArrayList<User>();
+		List<User> users = new ArrayList<>();
 		
 		users.add(new User("Danilo","Fazio","danilo.fazio@nttdata.com"));
 		users.add(new User("Raffaele","Pezzo","raffaele.pezzo@nttdata.com"));
