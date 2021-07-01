@@ -11,14 +11,11 @@ import java.util.stream.Stream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.nttdata.mock.mms.api.config.UsersConfig;
 import com.nttdata.mock.mms.api.enums.MockAuthExceptionEnum;
 import com.nttdata.mock.mms.api.exceptions.MockMmmsException;
 import com.nttdata.mock.mms.api.jwt.JwtTokenUtil;
@@ -40,9 +37,6 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
-	@Autowired
-	private UsersConfig usersConfig;
-	
 	@Override
 	@Loggable
 	public AuthenticationResponse getAuthentication(HttpServletRequest httpRequest) throws MockMmmsException {
@@ -63,8 +57,6 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
 			throw e;
-		}catch (Exception e1) {
-			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
 		return result;
@@ -76,37 +68,42 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		AuthenticationResponse result = new AuthenticationResponse();
 		result.setType("AuthenticationResponse");
 		
-		ImmutablePair<String, User> user = usersConfig.checkLogin(request.getUsername().toUpperCase(), request.getPassword());
-		
-		if(user == null) {
-			LOG.error("Bad Credentials", MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get());
-			throw MockAuthExceptionEnum.BAD_CREDENTIALS_LDAP_EXCEPTION.get();
-		}
-		
 		try {
-			Map<String, Object> claims = new HashMap<>();
+			Map<String, User> map = new HashMap<>();
+		    map.put("DANILO.FAZIO", new User("Danilo","Fazio", "danilo.fazio@nttdata.com", "password", "GTFRHR45RT6RDG56"));
+		    map.put("CARMELO.MILORDO", new User("Carmelo","Milordo", "carmelo.milordo@nttdata.com", "password", "EG454GTG6HDG5G5H"));
+		    map.put("VINCENZO.IANNINI", new User("Vincenzo","Iannini", "vincenzo.iannini@nttdata.com", "password", "NNNVCN96C19D005H"));
+		    map.put("MARIO.ROMANELLI", new User("MARCO","ROMANELLI", "MARCO.ROMANELLI@LIBERO.IT", "password", "RMNMRC66H06A944T"));
 			
-			claims.put(Constants.CODICEFISCALE_CLAIM, user.getValue().getCodiceFiscale().toUpperCase());
-			claims.put(Constants.NOME_CLAIM, user.getValue().getFirstName().toUpperCase());
-			claims.put(Constants.COGNOME_CLAIM, user.getValue().getLastName().toUpperCase());
-			claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
+		    User user = map.get(request.getUsername().toUpperCase());
+		    
+			if(user != null && user.getPassword().equals(request.getPassword())) {
+				Map<String, Object> claims = new HashMap<>();
+				
+				claims.put(Constants.CODICEFISCALE_CLAIM, user.getCodiceFiscale().toUpperCase());
+				claims.put(Constants.NOME_CLAIM, user.getFirstName().toUpperCase());
+				claims.put(Constants.COGNOME_CLAIM, user.getLastName().toUpperCase());
+				claims.put(Constants.AUTHTYPE, Constants.AUTHLDAP);
+
+				UserAuthResponse userAuth = new UserAuthResponse();
+				userAuth.setToken(jwtTokenUtil.generateToken(claims));
+				userAuth.setCodiceFiscale(user.getCodiceFiscale().toUpperCase());
+				userAuth.setNome(user.getFirstName().toUpperCase());
+				userAuth.setCognome(user.getLastName().toUpperCase());
+				
+				result.setSuccess(true);
+				result.setMessage("Successful Operation.");
+				result.setResultCode(200);
+				result.setSchema(userAuth);
+			}else {
+				LOG.error("Operation failed with CF: {}",  request.getUsername().toUpperCase());
+				result.setSuccess(false);
+				result.setMessage("Utente non trovato");
+				result.setResultCode(200);
+			}
 			
-			String token = jwtTokenUtil.generateToken(claims);
-			
-			UserAuthResponse userAuth = new UserAuthResponse();
-			userAuth.setToken(token);
-			userAuth.setCodiceFiscale(user.getValue().getCodiceFiscale().toUpperCase());
-			userAuth.setNome(user.getValue().getFirstName().toUpperCase());
-			userAuth.setCognome(user.getValue().getLastName().toUpperCase());
-			
-			result.setSuccess(true);
-			result.setMessage("Successful Operation.");
-			result.setResultCode(200);
-			result.setSchema(userAuth);
 		}catch (MockMmmsException e) {
 			throw e;
-		}catch (Exception e1) {
-			throw new MockMmmsException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 501, "Operazione fallita: " + e1.getMessage());
 		}
 		
 		return result;

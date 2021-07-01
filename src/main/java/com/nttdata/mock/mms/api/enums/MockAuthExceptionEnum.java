@@ -10,8 +10,7 @@ public enum MockAuthExceptionEnum implements Supplier<MockMmmsException>{
 	
 	//---------------HTTP 401---------------------/
 	
-	TOKEN_FEDERA_EXCEPTION(new MockMmmsException(HttpStatus.UNAUTHORIZED.value(), 401001, "Federa Token not found")),
-	BAD_CREDENTIALS_LDAP_EXCEPTION(new MockMmmsException(HttpStatus.UNAUTHORIZED.value(), 401002, "Bad Credentials"));
+	TOKEN_FEDERA_EXCEPTION(new MockMmmsException(HttpStatus.UNAUTHORIZED.value(), 401001, "Federa Token not found"));
 	
 	private final MockMmmsException exception;
 
