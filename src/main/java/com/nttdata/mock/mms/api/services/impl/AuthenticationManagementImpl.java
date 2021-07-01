@@ -96,10 +96,11 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 				result.setResultCode(200);
 				result.setSchema(userAuth);
 			}else {
-				LOG.error("Operation failed with CF: {}",  request.getUsername().toUpperCase());
 				result.setSuccess(false);
 				result.setMessage("Utente non trovato");
-				result.setResultCode(200);
+				result.setResultCode(420);
+				String message = request.getUsername().toUpperCase();
+				LOG.error("Operation failed with CF: {}",  message);
 			}
 			
 		}catch (MockMmmsException e) {
