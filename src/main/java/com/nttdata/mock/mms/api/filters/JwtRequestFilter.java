@@ -1,7 +1,6 @@
 package com.nttdata.mock.mms.api.filters;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -66,19 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				validateToken(jwtToken, request);
 			} catch (MockMmmsException e) {
 				LOG.error(e.getMessage(), e);
-				PrintWriter out = response.getWriter();
-		        Map<String, Object> data = new HashMap<>();
-		        data.put("timestamp", Calendar.getInstance().getTime());
-		        data.put("date", LocalDateTime.now());
-		        data.put("exception", e.getMessage());
-		        data.put("httpCode", e.getHttpCode());
-		        data.put("errorCode", e.getErrorCode());
-		        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		        String jsonString = objectMapper.writeValueAsString(data);
-		        response.getWriter().print(jsonString);
-		        out.flush();
-		        return;
+				sendResponse(e, response);
 			}
 		} 
 		
@@ -86,6 +73,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		chain.doFilter(request, response);
 	}
 	
+
 	private Cookie checkCookieFedera(HttpServletRequest request) throws MockMmmsException{
 		
 		List<Cookie> cookies = Optional.ofNullable(request.getCookies()).map(Arrays::stream).orElseGet(Stream::empty).collect(Collectors.toList());
@@ -113,6 +101,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			
 		}
 			
+	}
+	
+	private void sendResponse(MockMmmsException e, HttpServletResponse response) throws IOException {
+        Map<String, Object> data = new HashMap<>();
+        data.put("timestamp", Calendar.getInstance().getTime());
+        data.put("date", LocalDateTime.now());
+        data.put("exception", e.getMessage());
+        data.put("httpCode", e.getHttpCode());
+        data.put("errorCode", e.getErrorCode());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        String jsonString = objectMapper.writeValueAsString(data);
+        response.getWriter().print(jsonString);
+        response.getWriter().flush();
 	}
 
 }

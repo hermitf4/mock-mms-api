@@ -100,7 +100,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 				result.setMessage("Utente non trovato");
 				result.setResultCode(420);
 				String message = request.getUsername().toUpperCase();
-				LOG.error("Operation failed with User: {}",  message);
+				LOG.debug("Operation failed with User: {}",  message);
 			}
 			
 		}catch (MockMmmsException e) {
