@@ -51,7 +51,7 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 		try {
 			UserAuthResponse userAuth = jwtTokenUtil.decodeJwtTokenFedera(tokenFEDERA);
 			
-			result.setSuccess(true);
+			result.setSuccess(Boolean.TRUE);
 			result.setMessage("Successful Operation.");
 			result.setResultCode(200);
 			result.setSchema(userAuth);
@@ -91,12 +91,12 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 				userAuth.setNome(user.getFirstName().toUpperCase());
 				userAuth.setCognome(user.getLastName().toUpperCase());
 				
-				result.setSuccess(true);
+				result.setSuccess(Boolean.TRUE);
 				result.setMessage("Successful Operation.");
 				result.setResultCode(200);
 				result.setSchema(userAuth);
 			}else {
-				result.setSuccess(false);
+				result.setSuccess(Boolean.FALSE);
 				result.setMessage("Utente non trovato");
 				result.setResultCode(420);
 				String message = request.getUsername().toUpperCase();
@@ -125,11 +125,11 @@ public class AuthenticationManagementImpl implements IAuthenticationManagement{
 				String authType = jwtTokenUtil.validateToken(jwtToken).getClaim(Constants.AUTHTYPE).asString();
 				
 				if(authType.equals(Constants.AUTHFEDERA)) {
-					result.setSuccess(true);
+					result.setSuccess(Boolean.TRUE);
 					result.setMessage("Successful Operation Logout Federa.");
 					result.setResultCode(204);
 				}else if (authType.equals(Constants.AUTHLDAP)){
-					result.setSuccess(true);
+					result.setSuccess(Boolean.TRUE);
 					result.setMessage("Successful Operation Logout LDAP.");
 					result.setResultCode(200);
 				}
